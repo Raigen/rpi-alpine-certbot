@@ -1,0 +1,23 @@
+sudo: required
+services:
+- docker
+language: bash
+script:
+# prepare qemu
+- docker run --rm --privileged multiarch/qemu-user-static:register --reset
+# build image
+- docker build
+    --build-arg VCS_REF=`git rev-parse --short HEAD`
+    --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"`
+    -t raigen/rpi-alpine-certbot .
+# test image
+- docker run raigen/rpi-alpine-certbot certbot --version
+# push image
+- >
+  if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+    docker login -u="$DOCKER_USER" -p="$DOCKER_PASS"
+    TAG=$(grep "ENV CERTBOT_VERSION" Dockerfile | awk 'NF>1{print $NF}')
+    docker tag raigen/rpi-alpine-certbot raigen/rpi-alpine-certbot:$TAG
+    docker push raigen/rpi-alpine-certbot:$TAG
+    docker push raigen/rpi-alpine-certbot
+  fi
