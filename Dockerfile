@@ -4,7 +4,7 @@ MAINTAINER Raigen <https://github.com/Raigen>
 ARG VCS_REF
 ARG BUILD_DATE
 
-ENV CERTBOT_VERSION 0.11.1
+ENV CERTBOT_VERSION 0.12.0
 
 LABEL org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.name="Let's Encrypt / Certbot" \
